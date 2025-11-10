@@ -1,6 +1,4 @@
-require("dotenv").config()
-
-
+require("dotenv").config();
 const express = require("express"); //REQUIRE EXPRESS
 const app = express();
 // const mongoose = require("mongoose"); 
@@ -10,6 +8,7 @@ const UserModel = require("./model/user.model"); //REQUIRE USER MODEL
 const CenterModel = require("./model/center.model"); //REQUIRE CENTER MODEL
 const StaffModel = require("./model/staff.model"); //REQUIRE STAFF MODEL
 const AdminModel = require("./model/admin.model"); //REQUIRE ADMIN MODEL
+const bcrypt = require("bcrypt"); //REQUIRE BCRYPT FOR HASHING PASSWORDS
 const bodyParser = require("body-parser");
 app.use(bodyParser.json()); // for JSON data
 app.use(bodyParser.urlencoded({ extended: true })); // for form data
@@ -172,14 +171,6 @@ app.get("/terms-and-condition", (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-const bcrypt = require("bcrypt"); //REQUIRE BCRYPT FOR HASHING PASSWORDS
 const { get } = require("http");
 const { isLength } = require("validator");
 
