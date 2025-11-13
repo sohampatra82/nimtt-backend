@@ -24,20 +24,19 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const fs = require("fs");
 const upload = require("./utils/multer.config"); //REQUIRE MULTER CONFIG
-
+const cors = require("cors");
 app.set("views","./views"); //SET VIEWS DIRECTORY
 app.set("view engine", "ejs"); //SET VIEW ENGINE TO EJS
 app.use(express.json()); //USE JSON
 app.use(express.urlencoded({ extended: true })); //USE URL ENCODED
 app.use(express.static(path.join(__dirname, "public"))); //USE STATIC FILES
-// app.use(
-//   cors({
-//     origin: "https://www.nimtt.co.in",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true
-//   })
-// ); //USE CORS
-// app.use(cors());
+app.use(
+  cors({
+    origin: "https://nimtt.co.in", // use your real website domain
+    credentials: true
+  })
+);
+
 
 
 
