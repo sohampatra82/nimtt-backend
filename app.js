@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express"); //REQUIRE EXPRESS
 const app = express();
-// const mongoose = require("mongoose"); 
+const mongoose = require("mongoose"); 
 const dbConnect = require("./config/db")
 const adminDashboardModel = require("./model/adminDashboard.model");
 const UserModel = require("./model/user.model"); //REQUIRE USER MODEL
