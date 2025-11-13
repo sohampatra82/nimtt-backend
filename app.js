@@ -8,6 +8,7 @@ const UserModel = require("./model/user.model"); //REQUIRE USER MODEL
 const CenterModel = require("./model/center.model"); //REQUIRE CENTER MODEL
 const StaffModel = require("./model/staff.model"); //REQUIRE STAFF MODEL
 const AdminModel = require("./model/admin.model"); //REQUIRE ADMIN MODEL
+const dummyModel = require("./model/dummy.model"); //REQUIRE ADMIN MODEL
 const bcrypt = require("bcrypt"); //REQUIRE BCRYPT FOR HASHING PASSWORDS
 const bodyParser = require("body-parser");
 app.use(bodyParser.json()); // for JSON data
@@ -36,7 +37,269 @@ app.use(express.static(path.join(__dirname, "public"))); //USE STATIC FILES
 //     credentials: true
 //   })
 // ); //USE CORS
-// app.use(cors()); 
+// app.use(cors());
+
+
+
+// SIGNUP
+app.post(
+  "/dummysignup",
+  body("email").isEmail().trim().isLength({ min: 8 }),
+  body("username").trim().isLength({ min: 5 }),
+  body("password").trim().isLength({ min: 4 }),
+  body("confirm-password").custom((value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error("Passwords do not match");
+    }
+    return true;
+  }),
+  async (req, res) => {
+    try {
+      // Validate input fields
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const errorMessage = errors.array().map(err => err.msg).join(", ");
+        return res.send(`
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <script src="https://cdn.tailwindcss.com"></script>
+              <title>Sign-up Error</title>
+            </head>
+            <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 class="text-2xl font-semibold text-red-600 mb-4">Invalid Input</h2>
+                <p class="text-gray-700 mb-6">${errorMessage}</p>
+                <a href="/dummysignup" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+              </div>
+            </body>
+          </html>
+        `);
+      }
+
+      const { username, email, password } = req.body;
+
+      // Check if username or email already exists
+      const existingUser = await dummyModel.findOne({
+        $or: [{ username }, { email }]
+      });
+      if (existingUser) {
+        return res.send(`
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <script src="https://cdn.tailwindcss.com"></script>
+              <title>Sign-up Error</title>
+            </head>
+            <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 class="text-2xl font-semibold text-red-600 mb-4">Sign-up Failed</h2>
+                <p class="text-gray-700 mb-6">The provided username or email is already in use.</p>
+                <a href="/dummysignup" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+              </div>
+            </body>
+          </html>
+        `);
+      }
+
+      // Hash password and create new user
+      const hashPassword = await bcrypt.hash(password, 10);
+      await dummyModel.create({
+        username,
+        email,
+        password: hashPassword
+      });
+
+      // Show success message and redirect to login
+      return res.send(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <title>Sign-up Success</title>
+          </head>
+          <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+              <h2 class="text-2xl font-semibold text-green-600 mb-4">Sign-up Successful</h2>
+              <p class="text-gray-700 mb-4">Your account has been successfully created.</p>
+              <p class="text-gray-600">Redirecting to the login page...</p>
+              <script>
+                setTimeout(() => {
+                  window.location.href = "/dummylogin";
+                }, 2000);
+              </script>
+            </div>
+          </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error("Sign-up error:", error);
+      return res.send(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <title>Server Error</title>
+          </head>
+          <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+              <h2 class="text-2xl font-semibold text-red-600 mb-4">Server Error</h2>
+              <p class="text-gray-700 mb-6">An unexpected error occurred during sign-up. Please try again later.</p>
+              <a href="/dummysignup" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+            </div>
+          </body>
+        </html>
+      `);
+    }
+  }
+);
+
+//LOGIN
+app.post(
+  "/dummylogin",
+  body("username").trim().isLength({ min: 5 }),
+  body("password").trim().isLength({ min: 4 }),
+  async (req, res) => {
+    try {
+      // Validate input fields
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.send(`
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <script src="https://cdn.tailwindcss.com"></script>
+              <title>Login Error</title>
+            </head>
+            <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 class="text-2xl font-semibold text-red-600 mb-4">Invalid Input</h2>
+                <p class="text-gray-700 mb-6">The username must be at least 5 characters, and the password must be at least 4 characters.</p>
+                <a href="/dummylogin" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+              </div>
+            </body>
+          </html>
+        `);
+      }
+
+      const { username, password } = req.body;
+
+      // Check if user exists
+      const Employeedata = await dummyModel.findOne({ username });
+      if (!Employeedata) {
+        return res.send(`
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <script src="https://cdn.tailwindcss.com"></script>
+              <title>Login Error</title>
+            </head>
+            <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 class="text-2xl font-semibold text-red-600 mb-4">Login Failed</h2>
+                <p class="text-gray-700 mb-6">The provided username or password is incorrect.</p>
+                <a href="/dummylogin" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+              </div>
+            </body>
+          </html>
+        `);
+      }
+
+      // Verify password
+      const loginPassWord = await bcrypt.compare(
+        password,
+        Employeedata.password
+      );
+      if (!loginPassWord) {
+        return res.send(`
+          <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <script src="https://cdn.tailwindcss.com"></script>
+              <title>Login Error</title>
+            </head>
+            <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h2 class="text-2xl font-semibold text-red-600 mb-4">Login Failed</h2>
+                <p class="text-gray-700 mb-6">The provided username or password is incorrect.</p>
+                <a href="/dummylogin" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+              </div>
+            </body>
+          </html>
+        `);
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          UserID: Employeedata._id,
+          username: Employeedata.username,
+          email: Employeedata.email
+        },
+        process.env.JWT_SECRET
+      );
+
+      // Set token in cookie and show success message
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict"
+      });
+
+      return res.send(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <title>Login Success</title>
+          </head>
+          <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+              <h2 class="text-2xl font-semibold text-green-600 mb-4">Login Successful</h2>
+              <p class="text-gray-700 mb-4">You have successfully logged in to your account.</p>
+              <p class="text-gray-600">Redirecting to the student support page...</p>
+              <script>
+                setTimeout(() => {
+                  window.location.href = "/";
+                }, 2000);
+              </script>
+            </div>
+          </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error("Login error:", error);
+      return res.send(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdn.tailwindcss.com"></script>
+            <title>Server Error</title>
+          </head>
+          <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+              <h2 class="text-2xl font-semibold text-red-600 mb-4">Server Error</h2>
+              <p class="text-gray-700 mb-6">An unexpected error occurred during login. Please try again later.</p>
+              <a href="/dummylogin" class="inline-block px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors">Try Again</a>
+            </div>
+          </body>
+        </html>
+      `);
+    }
+  }
+);
+
+
+
 
 
 app.get("/", (req, res) => {
@@ -168,6 +431,12 @@ app.get("/student-sponsorship", (req, res) => {
 });
 app.get("/terms-and-condition", (req, res) => {
   res.render("terms-and-condition");
+});
+app.get("/dummylogin", (req, res) => {
+  res.render("dummylogin");
+});
+app.get("/dummysignup", (req, res) => {
+  res.render("dummysignup");
 });
 
 
