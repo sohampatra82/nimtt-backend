@@ -537,6 +537,13 @@ app.get("/admin-dashboard/:studentId", async (req, res) => {
       ? `${baseUrl}/uploads/${path.basename(student.photo)}`
       : "";
 
+    const dob = new Date(student.dob);
+    const day = String(dob.getDate()).padStart(2, "0");
+    const month = String(dob.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = dob.getFullYear();
+    const formattedDob = `${day}-${month}-${year}`;
+
+    
     const studentData = {
       studentId: student.studentId,
       name: student.name,
@@ -544,7 +551,7 @@ app.get("/admin-dashboard/:studentId", async (req, res) => {
       enrollment: student.enrollment,
       university: student.university,
       fatherName: student.fatherName,
-      dob: student.dob.toISOString().split("T")[0],
+      dob: formattedDob,
       mobile: student.mobile,
       email: student.email,
       address: student.address,
