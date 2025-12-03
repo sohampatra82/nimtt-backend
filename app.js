@@ -520,48 +520,41 @@ app.post("/admin-dashboard", upload, async (req, res) => {
 });
 
 // GET route to fetch student data
+
 app.get("/admin-dashboard/:studentId", async (req, res) => {
   try {
     const { studentId } = req.params;
-    if (!studentId) {
-      return res.status(400).json({ message: "Student ID is required" });
-    }
+    if (!studentId) return res.status(400).json({ message: "Student ID is required" });
 
     const student = await adminDashboardModel.findOne({ studentId });
-    if (!student) {
-      return res.status(404).json({ message: "Student not found" });
-    }
+    if (!student) return res.status(404).json({ message: "Student not found" });
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
-    const photoUrl = student.photo
-      ? `${baseUrl}/uploads/${path.basename(student.photo)}`
-      : "";
+    const photoUrl = student.photo ? `${baseUrl}/uploads/${path.basename(student.photo)}` : "";
 
-    const dob = new Date(student.dob);
-    const day = String(dob.getDate()).padStart(2, "0");
-    const month = String(dob.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const year = dob.getFullYear();
+    // FIX: Use UTC to avoid timezone shift
+    const dob = student.dob;
+    const day = String(dob.getUTCDate()).padStart(2, "0");
+    const month = String(dob.getUTCMonth() + 1).padStart(2, "0");
+    const year = dob.getUTCFullYear();
     const formattedDob = `${day}-${month}-${year}`;
 
-    
-    const studentData = {
+    res.json({
       studentId: student.studentId,
       name: student.name,
+      fatherName: student.fatherName,
+      university: student.university,
       course: student.course,
       enrollment: student.enrollment,
-      university: student.university,
-      fatherName: student.fatherName,
       dob: formattedDob,
       mobile: student.mobile,
       email: student.email,
       address: student.address,
       photo: photoUrl
-    };
-
-    res.status(200).json(studentData);
+    });
   } catch (error) {
-    console.error("Error fetching student:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
