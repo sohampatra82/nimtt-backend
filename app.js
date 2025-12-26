@@ -446,6 +446,7 @@ const { isLength } = require("validator");
 
 
 // ALL ADMIN DASHBOARD SCHEMAS
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 const uploadDir = path.join(__dirname, "public/uploads");
 if (!fs.existsSync(uploadDir)) {
