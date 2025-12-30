@@ -13,6 +13,7 @@ const AdminModel = require("./model/admin.model"); //REQUIRE ADMIN MODEL
 const dummyModel = require("./model/dummy.model"); //REQUIRE ADMIN MODEL
 const bcrypt = require("bcrypt"); //REQUIRE BCRYPT FOR HASHING PASSWORDS
 const bodyParser = require("body-parser");
+const studentAuth = require('./middleware/studentAuth') //REQUIRE ADMIN AUTH MIDDLEWARE
 app.use(bodyParser.json()); // for JSON data
 app.use(bodyParser.urlencoded({ extended: true })); // for form data
 // const cors = require("cors");
@@ -355,9 +356,12 @@ app.get("/sign-in", (req, res) => {
 app.get("/apply-for-job", (req, res) => {
   res.render("apply-for-job");
 });
-app.get("/student-dashboard", (req, res) => {
+
+app.get("/student-dashboard", studentAuth, (req, res) => {
+  res.set("Cache-Control", "no-store");
   res.render("student-dashboard");
 });
+
 app.get("/admin-dashboard", (req, res) => {
   res.render("admin-dashboard");
 });
@@ -441,6 +445,9 @@ app.get("/dummysignup", (req, res) => {
 });
 
 
+
+
+
 const { get } = require("http");
 const { isLength } = require("validator");
 
@@ -466,7 +473,7 @@ app.use((err, req, res, next) => {
 });
 
 // POST route to save student data
-app.post("/admin-dashboard", upload, async (req, res) => {
+app.post("/admin-dashboard", upload.single("photo"), async (req, res) => {
   try {
     console.log("Form data:", req.body);
     console.log("File:", req.file);
@@ -561,7 +568,7 @@ app.get("/admin-dashboard/:studentId", async (req, res) => {
 
 
 // New UPDATE route
-app.put("/admin-dashboard/:studentId", upload, async (req, res) => {
+app.put("/admin-dashboard/:studentId", upload.single("photo"), async (req, res) => {
   try {
     const { studentId } = req.params;
     const {
@@ -1698,6 +1705,46 @@ app.post(
     }
   }
 );
+
+
+
+app.get("/student-logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict"
+  });
+
+  return res.send(`
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>Logout</title>
+      </head>
+      <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+          <h2 class="text-2xl font-semibold text-green-600 mb-4">
+            Logged Out Successfully
+          </h2>
+          <p class="text-gray-700 mb-4">
+            You have been logged out from the student dashboard.
+          </p>
+          <p class="text-gray-600">
+            Redirecting to login page...
+          </p>
+          <script>
+            setTimeout(() => {
+              window.location.href = "/student-login";
+            }, 2000);
+          </script>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
 
 // Nodemailer transporter configuration
 const transporter = nodemailer.createTransport({

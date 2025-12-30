@@ -9,6 +9,7 @@
         href="https://ik.imagekit.io/7de5cntkw/1692626704665-photoaidcom-cropped%20(1).jpeg?updatedAt=1738048156918"
         type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -171,6 +172,23 @@
             object-fit: cover;
         }
 
+        .download-btn {
+            background: #4a90e2;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .download-btn:hover {
+            background: #357abd;
+        }
+
         .profile-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -212,12 +230,32 @@
             text-align: left;
         }
 
+        .address-section {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .address-left {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .address-left h3 {
+            font-size: 1.3rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
         .address-item {
             display: flex;
             align-items: flex-start;
-            padding: 20px 0;
+            padding: 15px 0;
             border-top: 1px solid #3a3a5a;
-            margin-top: 20px;
         }
 
         .address-item label {
@@ -240,6 +278,13 @@
             font-size: 0.95rem;
             color: #e0e0e0;
             text-align: left;
+            word-break: break-word;
+        }
+
+        .address-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         footer {
@@ -251,65 +296,29 @@
         }
 
         @media (max-width: 768px) {
-            header .container {
+            .profile-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
-            }
-
-            header h1 {
-                font-size: 1.5rem;
-            }
-
-            header .user-info {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            header .user-info span {
-                font-size: 0.9rem;
-            }
-
-            header .user-info button {
-                padding: 6px 12px;
-                font-size: 0.85rem;
-            }
-
-            .container {
-                padding: 0 15px;
-            }
-
-            .login-container {
-                max-width: 90%;
-                padding: 20px;
-            }
-
-            .login-container h2 {
-                font-size: 1.5rem;
-            }
-
-            .login-container input {
-                padding: 10px;
-                font-size: 0.95rem;
-            }
-
-            .login-container button {
-                padding: 10px 20px;
-                font-size: 0.95rem;
-            }
-
-            .profile-card {
-                max-width: 90%;
-                padding: 20px;
-            }
-
-            .profile-card h2 {
-                font-size: 1.5rem;
+                gap: 15px;
             }
 
             .profile-picture {
                 width: 80px;
                 height: 80px;
+            }
+
+            .address-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .address-right {
+                justify-content: flex-start;
+            }
+
+            .download-btn {
+                align-self: flex-start;
+                width: fit-content;
             }
 
             .profile-item label,
@@ -327,7 +336,6 @@
             .address-item span.value {
                 width: 100%;
                 font-size: 0.9rem;
-                word-break: break-word;
             }
 
             .profile-item,
@@ -339,64 +347,18 @@
         }
 
         @media (max-width: 600px) {
-            header h1 {
-                font-size: 1.4rem;
-            }
-
-            header .user-info span {
-                font-size: 0.85rem;
-            }
-
-            header .user-info button {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-            }
-
-            .container {
-                padding: 0 10px;
-            }
-
-            .login-container {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            .login-container h2 {
-                font-size: 1.3rem;
-            }
-
-            .login-container input {
-                padding: 8px;
-                font-size: 0.9rem;
-            }
-
-            .login-container button {
-                padding: 8px 16px;
-                font-size: 0.9rem;
-            }
-
-            .profile-card {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            .profile-card h2 {
-                font-size: 1.3rem;
-            }
-
             .profile-picture {
                 width: 60px;
                 height: 60px;
             }
 
-            .profile-item label,
-            .address-item label {
-                font-size: 0.85rem;
+            .address-left h3 {
+                font-size: 1.1rem;
             }
 
-            .profile-item span.value,
-            .address-item span.value {
-                font-size: 0.85rem;
+            .download-btn {
+                padding: 10px 20px;
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -409,11 +371,13 @@
             <h1>Student Portal</h1>
             <div class="user-info" id="user-info" style="display: none;">
                 <span id="welcome-message">Welcome, student</span>
-                <button onclick="logout()">Logout</button>
+                <form action="/student-logout" >
+                    <button type="submit">Logout</button>
+                </form>
+
             </div>
         </div>
     </header>
-
     <!-- Main Content -->
     <main>
         <div class="container">
@@ -459,6 +423,11 @@
                             <span class="colon">:</span>
                             <span class="value" id="dob-value"></span>
                         </div>
+                        <div class="profile-item">
+                            <label>Address</label>
+                            <span class="colon">:</span>
+                            <span class="value" id="address-value"></span>
+                        </div>
                     </div>
                     <!-- Right Column -->
                     <div>
@@ -484,24 +453,25 @@
                         </div>
                     </div>
                 </div>
-                <!-- Address Section -->
-                <div class="address-item">
-                    <label>Address</label>
-                    <span class="colon">:</span>
-                    <span class="value" id="address-value"></span>
+                <!-- Address Section with Download Button on Right -->
+                <div class="address-section">
+                  
+                    <div class="address-right">
+                        <button class="download-btn" onclick="downloadIDCard()">Download ID Card (PDF)</button>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
-
     <!-- Footer -->
     <footer>
         <div class="container">
             <p>&copy; 2025 Student Portal. All rights reserved.</p>
         </div>
     </footer>
-
     <script>
+        const { jsPDF } = window.jspdf;
+
         async function login() {
             const studentId = document.getElementById('student-id').value.trim();
             const errorMessage = document.getElementById('error-message');
@@ -509,20 +479,17 @@
             const profileCard = document.getElementById('profile-card');
             const userInfo = document.getElementById('user-info');
             const welcomeMessage = document.getElementById('welcome-message');
-
             if (!studentId) {
                 errorMessage.textContent = 'Please enter a Student ID';
                 errorMessage.style.display = 'block';
                 return;
             }
-
             try {
                 const response = await fetch(`/admin-dashboard/${studentId}`);
                 const data = await response.json();
-
                 if (response.ok) {
-                    console.log('Photo URL:', data.photo); // Debug log
-                    // Populate profile data
+                    window.studentData = data;
+
                     document.getElementById('student-id-value').textContent = data.studentId;
                     document.getElementById('name-value').textContent = data.name;
                     document.getElementById('father-name-value').textContent = data.fatherName;
@@ -535,10 +502,8 @@
                     document.getElementById('address-value').textContent = data.address;
                     document.getElementById('profile-photo').src = data.photo || 'https://via.placeholder.com/100?text=No+Image';
 
-                    // Update welcome message
                     welcomeMessage.textContent = `Welcome, ${data.name}`;
 
-                    // Show profile and hide login
                     loginContainer.style.display = 'none';
                     profileCard.style.display = 'block';
                     userInfo.style.display = 'flex';
@@ -548,10 +513,75 @@
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                console.error('Fetch error:', error); // Debug log
+                console.error('Fetch error:', error);
                 errorMessage.textContent = 'Error connecting to server';
                 errorMessage.style.display = 'block';
             }
+        }
+
+        function downloadIDCard() {
+            const data = window.studentData;
+            if (!data) return;
+
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            doc.setFillColor(30, 30, 47);
+            doc.rect(0, 0, 210, 297, 'F');
+
+            const cardX = 40;
+            const cardY = 30;
+            const cardWidth = 130;
+            const cardHeight = 200;
+
+            doc.setFillColor(74, 74, 138);
+            doc.roundedRect(cardX, cardY, cardWidth, cardHeight, 10, 10, 'F');
+
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(cardX + 10, cardY + 10, cardWidth - 20, 20, 5, 5, 'F');
+            doc.setTextColor(30, 30, 47);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Student ID Card', cardX + cardWidth / 2, cardY + 23, { align: 'center' });
+
+            const photoUrl = document.getElementById('profile-photo').src;
+            doc.addImage(photoUrl, 'JPEG', cardX + cardWidth / 2 - 25, cardY + 40, 40, 45);
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+
+            let y = cardY + 100;
+            const lineHeight = 10;
+
+            const details = [
+                ['Student ID', data.studentId],
+                ['Name', data.name],
+                ['Father\'s Name', data.fatherName],
+                ['Course', data.course],
+                ['Enrollment No.', data.enrollment],
+                ['University', data.university],
+                ['Date of Birth', data.dob],
+                ['Mobile', data.mobile],
+                ['Email', data.email]
+            ];
+
+            details.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.text(label + ':', cardX + 15, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(value || '-', cardX + 60, y);
+                y += lineHeight;
+            });
+
+            doc.setFontSize(10);
+            doc.setTextColor(200, 200, 200);
+            doc.text('© 2025 Student Portal', cardX + cardWidth / 2, cardY + cardHeight - 10, { align: 'center' });
+
+            doc.save(`${data.studentId}_ID_Card.pdf`);
         }
 
         function logout() {
@@ -561,21 +591,48 @@
             const studentIdInput = document.getElementById('student-id');
             const errorMessage = document.getElementById('error-message');
 
-            // Reset form and UI
             studentIdInput.value = '';
             loginContainer.style.display = 'block';
             profileCard.style.display = 'none';
             userInfo.style.display = 'none';
             errorMessage.style.display = 'none';
+            delete window.studentData;
         }
 
-        // Handle Enter key press for login
         document.getElementById('student-id').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
                 login();
             }
         });
     </script>
+    <script>
+        function fixImageRotation(src, size = 300) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = size;
+                    canvas.height = size;
+
+                    const ctx = canvas.getContext("2d");
+
+                    // Crop center square
+                    const minSide = Math.min(img.width, img.height);
+                    const sx = (img.width - minSide) / 2;
+                    const sy = (img.height - minSide) / 2;
+
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+
+                    resolve(canvas.toDataURL("image/jpeg", 1.0));
+                };
+
+                img.src = src;
+            });
+        }
+    </script>
+
 </body>
 
 </html>
