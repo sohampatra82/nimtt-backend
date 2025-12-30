@@ -344,6 +344,14 @@
                 align-items: flex-start;
                 gap: 5px;
             }
+
+            #document-actions {
+                flex-direction: column;
+            }
+
+            #document-actions button {
+                width: 100%;
+            }
         }
 
         @media (max-width: 600px) {
@@ -371,13 +379,13 @@
             <h1>Student Portal</h1>
             <div class="user-info" id="user-info" style="display: none;">
                 <span id="welcome-message">Welcome, student</span>
-                <form action="/student-logout" >
+                <form action="/student-logout">
                     <button type="submit">Logout</button>
                 </form>
-
             </div>
         </div>
     </header>
+
     <!-- Main Content -->
     <main>
         <div class="container">
@@ -387,6 +395,7 @@
                 <input type="text" id="student-id" placeholder="Enter Student ID" required>
                 <button onclick="login()">Login</button>
             </div>
+
             <div class="profile-card" id="profile-card">
                 <div class="profile-header">
                     <div class="profile-picture">
@@ -395,6 +404,7 @@
                     </div>
                     <h2>Student Profile</h2>
                 </div>
+
                 <div class="profile-grid">
                     <!-- Left Column -->
                     <div>
@@ -453,9 +463,31 @@
                         </div>
                     </div>
                 </div>
-                <!-- Address Section with Download Button on Right -->
+
+                <!-- Document & Download Section -->
                 <div class="address-section">
-                  
+                    <div class="address-left">
+                        <h3>Uploaded Student Document</h3>
+                        <div class="address-item" id="document-section" style="display: none;">
+                            <label style="display:none;">Document</label>
+                            <span class="colon" style="display:none;">:</span>
+                            <span class="value" id="document-name"
+                                style="font-weight: 600; color: #a0ffbf; display:none"></span>
+                        </div>
+                        <div id="no-document-message" style="color: #a0a0ff; font-style: italic; padding: 15px 0;">
+                            No supporting document uploaded yet.
+                        </div>
+
+                        <div id="document-actions" style="margin-top: 15px; display: none; gap: 10px; flex-wrap: wrap;">
+                            <button class="download-btn" onclick="viewDocument()" style="background: #4a90e2;">
+                                View Document
+                            </button>
+                            <button class="download-btn" onclick="downloadDocument()" style="background: #28a745;">
+                                Download Document
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="address-right">
                         <button class="download-btn" onclick="downloadIDCard()">Download ID Card (PDF)</button>
                     </div>
@@ -463,12 +495,14 @@
             </div>
         </div>
     </main>
+
     <!-- Footer -->
     <footer>
         <div class="container">
             <p>&copy; 2025 Student Portal. All rights reserved.</p>
         </div>
     </footer>
+
     <script>
         const { jsPDF } = window.jspdf;
 
@@ -479,14 +513,17 @@
             const profileCard = document.getElementById('profile-card');
             const userInfo = document.getElementById('user-info');
             const welcomeMessage = document.getElementById('welcome-message');
+
             if (!studentId) {
                 errorMessage.textContent = 'Please enter a Student ID';
                 errorMessage.style.display = 'block';
                 return;
             }
+
             try {
                 const response = await fetch(`/admin-dashboard/${studentId}`);
                 const data = await response.json();
+
                 if (response.ok) {
                     window.studentData = data;
 
@@ -500,9 +537,32 @@
                     document.getElementById('mobile-value').textContent = data.mobile;
                     document.getElementById('email-value').textContent = data.email;
                     document.getElementById('address-value').textContent = data.address;
-                    document.getElementById('profile-photo').src = data.photo || 'https://via.placeholder.com/100?text=No+Image';
-
+                    document.getElementById('profile-photo').src = data.photo || 'https://via.placeholder.com/100?text=No+Photo';
                     welcomeMessage.textContent = `Welcome, ${data.name}`;
+
+                    // Document handling
+                    const documentSection = document.getElementById('document-section');
+                    const noDocumentMessage = document.getElementById('no-document-message');
+                    const documentActions = document.getElementById('document-actions');
+                    const documentNameEl = document.getElementById('document-name');
+
+                    if (data.document && data.document.trim() !== "") {
+                        let filename = data.document.split('/').pop().split('?')[0];
+                        filename = decodeURIComponent(filename);
+                        if (filename.match(/^[0-9a-f]{24}/)) {
+                            filename = filename.replace(/^[0-9a-f]{24}\./, 'Document.');
+                        }
+                        documentNameEl.textContent = filename;
+                        documentSection.style.display = 'flex';
+                        noDocumentMessage.style.display = 'none';
+                        documentActions.style.display = 'flex';
+                        window.studentData.documentUrl = data.document;
+                        window.studentData.documentName = filename;
+                    } else {
+                        documentSection.style.display = 'none';
+                        noDocumentMessage.style.display = 'block';
+                        documentActions.style.display = 'none';
+                    }
 
                     loginContainer.style.display = 'none';
                     profileCard.style.display = 'block';
@@ -513,126 +573,127 @@
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                console.error('Fetch error:', error);
-                errorMessage.textContent = 'Error connecting to server';
+                console.error('Error:', error);
+                errorMessage.textContent = 'Server connection error';
                 errorMessage.style.display = 'block';
             }
         }
 
+        function viewDocument() {
+            if (window.studentData.documentUrl) {
+                window.open(window.studentData.documentUrl, '_blank');
+            }
+        }
+
+        function downloadDocument() {
+            if (window.studentData.documentUrl) {
+                const link = document.createElement('a');
+                link.href = window.studentData.documentUrl;
+                link.download = window.studentData.documentName || 'student_document';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // === NEW PROFESSIONAL FULL-PAGE PDF (not a small card) ===
         function downloadIDCard() {
             const data = window.studentData;
             if (!data) return;
 
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
+            const doc = new jsPDF('portrait', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 20;
+            let y = margin;
 
-            doc.setFillColor(30, 30, 47);
-            doc.rect(0, 0, 210, 297, 'F');
+            // Header Background
+            doc.setFillColor(0, 51, 102);
+            doc.rect(0, 0, pageWidth, 50, 'F');
 
-            const cardX = 40;
-            const cardY = 30;
-            const cardWidth = 130;
-            const cardHeight = 200;
+            // Logo
+            const logoUrl = 'https://ik.imagekit.io/7de5cntkw/1692626704665-photoaidcom-cropped%20(1).jpeg?updatedAt=1738048156918';
+            doc.addImage(logoUrl, 'JPEG', margin, 10, 20, 20);
 
-            doc.setFillColor(74, 74, 138);
-            doc.roundedRect(cardX, cardY, cardWidth, cardHeight, 10, 10, 'F');
-
-            doc.setFillColor(255, 255, 255);
-            doc.roundedRect(cardX + 10, cardY + 10, cardWidth - 20, 20, 5, 5, 'F');
-            doc.setTextColor(30, 30, 47);
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Student ID Card', cardX + cardWidth / 2, cardY + 23, { align: 'center' });
-
-            const photoUrl = document.getElementById('profile-photo').src;
-            doc.addImage(photoUrl, 'JPEG', cardX + cardWidth / 2 - 25, cardY + 40, 40, 45);
-
+            // Institution Title
             doc.setTextColor(255, 255, 255);
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('National Institute of Management and Technical Training', pageWidth / 2, y + 15, { align: 'center' });
+
             doc.setFontSize(12);
             doc.setFont('helvetica', 'normal');
+            doc.text('Affiliated to University • Established 2004', pageWidth / 2, y + 25, { align: 'center' });
 
-            let y = cardY + 100;
-            const lineHeight = 10;
+            y += 60;
 
+            // Section Title
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('STUDENT IDENTITY CARD', pageWidth / 2, y, { align: 'center' });
+            y += 15;
+
+            // Student Photo (right side)
+            const photoX = pageWidth - margin - 50;
+            const photoY = y - 10;
+            doc.setDrawColor(0, 51, 102);
+            doc.setLineWidth(1.5);
+            doc.roundedRect(photoX - 2, photoY - 2, 54, 64, 4, 4, 'S');
+
+            const photoUrl = document.getElementById('profile-photo').src;
+            if (photoUrl && !photoUrl.includes('placeholder')) {
+                doc.addImage(photoUrl, 'JPEG', photoX, photoY, 50, 60);
+            }
+
+            // Student Details (left side)
+            doc.setFontSize(13);
             const details = [
-                ['Student ID', data.studentId],
-                ['Name', data.name],
-                ['Father\'s Name', data.fatherName],
-                ['Course', data.course],
-                ['Enrollment No.', data.enrollment],
-                ['University', data.university],
-                ['Date of Birth', data.dob],
-                ['Mobile', data.mobile],
-                ['Email', data.email]
+                ['Student Name', data.name || '-'],
+                ['Father\'s Name', data.fatherName || '-'],
+                ['Student ID', data.studentId || '-'],
+                ['Enrollment No.', data.enrollment || '-'],
+                ['Course', data.course || '-'],
+                ['University/Board', data.university || '-'],
+                ['Date of Birth', data.dob || '-'],
+                ['Mobile Number', data.mobile || '-'],
+                ['Email ID', data.email || '-'],
+                ['Address', data.address || '-'],
+                ['Academic Session', '2025-2026'],
+                ['Valid Upto', '31 March 2027']
             ];
 
             details.forEach(([label, value]) => {
                 doc.setFont('helvetica', 'bold');
-                doc.text(label + ':', cardX + 15, y);
+                doc.text(label + ' :', margin, y);
                 doc.setFont('helvetica', 'normal');
-                doc.text(value || '-', cardX + 60, y);
-                y += lineHeight;
+                // Auto-split long text (especially address)
+                const splitValue = doc.splitTextToSize(value.toString(), pageWidth - margin - 80);
+                doc.text(splitValue, margin + 60, y);
+                y += splitValue.length > 1 ? 8 * splitValue.length : 10;
             });
 
+            // Signature Section
+            y += 20;
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'italic');
+            <!-- doc.text('Authorized Signatory', pageWidth - margin - 60, y); -->
+           
+            // Footer
+            y = pageHeight - 30;
             doc.setFontSize(10);
-            doc.setTextColor(200, 200, 200);
-            doc.text('© 2025 Student Portal', cardX + cardWidth / 2, cardY + cardHeight - 10, { align: 'center' });
+            doc.setTextColor(80, 80, 80);
+            doc.text('This is a digitally generated Student Identity Document.', pageWidth / 2, y, { align: 'center' });
+            doc.text('For verification, please contact the administration office.', pageWidth / 2, y + 8, { align: 'center' });
+            doc.text('© 2025-2026 Academic Year | All Rights Reserved', pageWidth / 2, y + 18, { align: 'center' });
 
-            doc.save(`${data.studentId}_ID_Card.pdf`);
+            doc.save(`${data.studentId}_Student_ID_Card.pdf`);
         }
 
-        function logout() {
-            const loginContainer = document.getElementById('login-container');
-            const profileCard = document.getElementById('profile-card');
-            const userInfo = document.getElementById('user-info');
-            const studentIdInput = document.getElementById('student-id');
-            const errorMessage = document.getElementById('error-message');
-
-            studentIdInput.value = '';
-            loginContainer.style.display = 'block';
-            profileCard.style.display = 'none';
-            userInfo.style.display = 'none';
-            errorMessage.style.display = 'none';
-            delete window.studentData;
-        }
-
-        document.getElementById('student-id').addEventListener('keypress', function (event) {
-            if (event.key === 'Enter') {
-                login();
-            }
+        document.getElementById('student-id').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') login();
         });
     </script>
-    <script>
-        function fixImageRotation(src, size = 300) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-
-                img.onload = () => {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = size;
-                    canvas.height = size;
-
-                    const ctx = canvas.getContext("2d");
-
-                    // Crop center square
-                    const minSide = Math.min(img.width, img.height);
-                    const sx = (img.width - minSide) / 2;
-                    const sy = (img.height - minSide) / 2;
-
-                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-
-                    resolve(canvas.toDataURL("image/jpeg", 1.0));
-                };
-
-                img.src = src;
-            });
-        }
-    </script>
-
 </body>
 
 </html>

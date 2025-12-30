@@ -473,72 +473,86 @@ app.use((err, req, res, next) => {
 });
 
 // POST route to save student data
-app.post("/admin-dashboard", upload.single("photo"), async (req, res) => {
-  try {
-    console.log("Form data:", req.body);
-    console.log("File:", req.file);
+app.post(
+  "/admin-dashboard",
+  upload.fields([{ name: "photo" }, { name: "document" }]),
+  async (req, res) => {
+    try {
+      console.log("Form data:", req.body);
+      console.log("Files:", req.files); // Note: req.files now (object)
 
-    const {
-      studentId,
-      name,
-      course,
-      enrollment,
-      university,
-      fatherName,
-      dob,
-      mobile,
-      email,
-      address
-    } = req.body;
+      const {
+        studentId,
+        name,
+        course,
+        enrollment,
+        university,
+        fatherName,
+        dob,
+        mobile,
+        email,
+        address
+      } = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({ error: "Photo is required" });
+      if (!req.files || !req.files.photo) {
+        return res.status(400).json({ error: "Photo is required" });
+      }
+
+      const student = new adminDashboardModel({
+        studentId,
+        name,
+        course,
+        enrollment,
+        university,
+        fatherName,
+        dob: new Date(dob),
+        mobile,
+        email,
+        address,
+        photo: req.files.photo[0].path.replace(/\\/g, "/"),
+        document: req.files.document
+          ? req.files.document[0].path.replace(/\\/g, "/")
+          : null
+      });
+
+      const savedStudent = await student.save();
+      console.log("Saved student:", savedStudent);
+      res.status(201).json({ message: "Student data saved successfully" });
+    } catch (error) {
+      console.error("Error saving student data:", error);
+      if (error.name === "ValidationError") {
+        return res
+          .status(400)
+          .json({ error: "Validation error", details: error.errors });
+      } else if (error.code === 11000) {
+        return res
+          .status(400)
+          .json({ error: "Duplicate student ID or email detected" });
+      }
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    const student = new adminDashboardModel({
-      studentId,
-      name,
-      course,
-      enrollment,
-      university,
-      fatherName,
-      dob: new Date(dob),
-      mobile,
-      email,
-      address,
-      photo: req.file.path.replace(/\\/g, "/")
-    });
-
-    const savedStudent = await student.save();
-    console.log("Saved student:", savedStudent);
-    res.status(201).json({ message: "Student data saved successfully" });
-  } catch (error) {
-    console.error("Error saving student data:", error);
-    if (error.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({ error: "Validation error", details: error.errors });
-    } else if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ error: "Duplicate student ID or email detected" });
-    }
-    res.status(500).json({ error: "Internal server error" });
   }
-});
+);
 
 // GET route to fetch student data
 
 app.get("/admin-dashboard/:studentId", async (req, res) => {
   try {
     const { studentId } = req.params;
-    if (!studentId) return res.status(400).json({ message: "Student ID is required" });
+    if (!studentId)
+      return res.status(400).json({ message: "Student ID is required" });
 
     const student = await adminDashboardModel.findOne({ studentId });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
-    const photoUrl = student.photo ? `${baseUrl}/uploads/${path.basename(student.photo)}` : "";
+
+    const photoUrl = student.photo
+      ? `${baseUrl}/uploads/${path.basename(student.photo)}`
+      : "";
+    const documentUrl = student.document
+      ? `${baseUrl}/uploads/${path.basename(student.document)}`
+      : "";
 
     // FIX: Use UTC to avoid timezone shift
     const dob = student.dob;
@@ -558,7 +572,8 @@ app.get("/admin-dashboard/:studentId", async (req, res) => {
       mobile: student.mobile,
       email: student.email,
       address: student.address,
-      photo: photoUrl
+      photo: photoUrl,
+      document: documentUrl // New field
     });
   } catch (error) {
     console.error("Error:", error);
@@ -568,62 +583,69 @@ app.get("/admin-dashboard/:studentId", async (req, res) => {
 
 
 // New UPDATE route
-app.put("/admin-dashboard/:studentId", upload.single("photo"), async (req, res) => {
-  try {
-    const { studentId } = req.params;
-    const {
-      name,
-      course,
-      enrollment,
-      university,
-      fatherName,
-      dob,
-      mobile,
-      email,
-      address
-    } = req.body;
+app.put(
+  "/admin-dashboard/:studentId",
+  upload.fields([{ name: "photo" }, { name: "document" }]),
+  async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const {
+        name,
+        course,
+        enrollment,
+        university,
+        fatherName,
+        dob,
+        mobile,
+        email,
+        address
+      } = req.body;
 
-    const updateData = {
-      name,
-      course,
-      enrollment,
-      university,
-      fatherName,
-      dob: new Date(dob),
-      mobile,
-      email,
-      address
-    };
+      const updateData = {
+        name,
+        course,
+        enrollment,
+        university,
+        fatherName,
+        dob: new Date(dob),
+        mobile,
+        email,
+        address
+      };
 
-    if (req.file) {
-      updateData.photo = req.file.path.replace(/\\/g, "/");
+      if (req.files && req.files.photo) {
+        updateData.photo = req.files.photo[0].path.replace(/\\/g, "/");
+      }
+      if (req.files && req.files.document) {
+        updateData.document = req.files.document[0].path.replace(/\\/g, "/");
+      }
+
+      const updatedStudent = await adminDashboardModel.findOneAndUpdate(
+        { studentId },
+        updateData,
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedStudent) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      res.status(200).json({ message: "Student data updated successfully" });
+    } catch (error) {
+      console.error("Error updating student data:", error);
+      if (error.name === "ValidationError") {
+        return res
+          .status(400)
+          .json({ error: "Validation error", details: error.errors });
+      } else if (error.code === 11000) {
+        return res
+          .status(400)
+          .json({ error: "Duplicate student ID or email detected" });
+      }
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    const updatedStudent = await adminDashboardModel.findOneAndUpdate(
-      { studentId },
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedStudent) {
-      return res.status(404).json({ message: "Student not found" });
-    }
-
-    res.status(200).json({ message: "Student data updated successfully" });
-  } catch (error) {
-    console.error("Error updating student data:", error);
-    if (error.name === "ValidationError") {
-      return res
-        .status(400)
-        .json({ error: "Validation error", details: error.errors });
-    } else if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ error: "Duplicate student ID or email detected" });
-    }
-    res.status(500).json({ error: "Internal server error" });
   }
-});
+);
 
 // New DELETE route
 app.delete("/admin-dashboard/:studentId", async (req, res) => {

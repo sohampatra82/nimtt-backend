@@ -23,7 +23,8 @@ const adminDashboardSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  fatherName: { // Consistent naming
+  fatherName: {
+    // Consistent naming
     type: String,
     required: true
   },
@@ -45,6 +46,10 @@ const adminDashboardSchema = mongoose.Schema({
     required: true
   },
   photo: {
+    type: String,
+    required: true
+  },
+  document: {
     type: String,
     required: true
   }

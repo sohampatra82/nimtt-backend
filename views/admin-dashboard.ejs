@@ -641,6 +641,12 @@
                             <input type="file" id="photo" name="photo" accept="image/*" required>
                             <img id="photoPreview" class="photo-preview" alt="Photo Preview">
                         </div>
+                        <div class="form-group full-width">
+                            <label for="document">Upload Document</label>
+                            <input type="file" id="document" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required>
+                            <p id="documentName" class="document-name"></p>
+                        </div>
+
                         <div class="form-buttons">
                             <button type="submit" class="submit-btn">
                                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -728,6 +734,11 @@
                                 <label for="editPhoto">Upload Photo</label>
                                 <input type="file" id="editPhoto" name="photo" accept="image/*">
                                 <img id="editPhotoPreview" class="photo-preview" alt="Photo Preview">
+                            </div>
+                            <div class="form-group full-width">
+                            <label for="editDocument">Upload Document</label>
+                            <input type="file" id="editDocument" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" >
+                                <img id="editDocumentPreview" class="photo-preview" alt="Document Preview">
                             </div>
                             <div class="form-buttons">
                                 <button type="submit">
