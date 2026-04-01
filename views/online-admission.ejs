@@ -10,62 +10,76 @@
         type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #1a3c34;
+            --primary-dark: #15332d;
+            --light-bg: #f5f7fa;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            padding: 40px;
-            background-color: #f5f7fa;
+            padding: 16px;
+            background-color: var(--light-bg);
             color: #333;
-            font-size: 16px;
+            line-height: 1.5;
+            font-size: 15px;
         }
 
         .admission {
-            max-width: 1000px;
-            margin: auto;
-            background: #ffffff;
-            padding: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 20px;
             align-items: center;
+            text-align: center;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
 
         .header img {
-            max-width: 180px;
+            max-width: 160px;
             height: auto;
         }
 
         .header .company-details {
-            text-align: right;
+            text-align: center;
         }
 
         .header .company-details h1 {
-            margin: 0;
-            font-size: 28px;
+            margin: 8px 0 0;
+            font-size: clamp(20px, 5.5vw, 28px);
             font-weight: 600;
-            color: #1a3c34;
+            color: var(--primary);
         }
 
         .header .company-details p {
-            margin: 6px 0;
+            margin: 4px 0;
             font-size: 14px;
             color: #555;
         }
 
         h2 {
-            font-size: 20px;
+            font-size: clamp(18px, 4.8vw, 20px);
             font-weight: 500;
-            color: #1a3c34;
+            color: var(--primary);
             border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            padding-bottom: 8px;
+            margin: 32px 0 20px;
         }
 
         .form-group {
@@ -74,7 +88,7 @@
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-size: 14px;
             font-weight: 500;
             color: #333;
@@ -84,89 +98,77 @@
         input[type="email"],
         input[type="number"],
         input[type="date"],
+        input[type="file"],
         select,
         textarea {
             width: 100%;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid #d0d0d0;
             border-radius: 6px;
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            box-sizing: border-box;
+            font-size: 15px;
+            font-family: inherit;
             background-color: #fafafa;
-            transition: border-color 0.3s;
+            transition: border-color 0.2s;
         }
 
         input:focus,
         select:focus,
         textarea:focus {
-            border-color: #3c1a1a;
+            border-color: var(--primary);
             outline: none;
         }
 
         .form-row {
             display: flex;
+            flex-direction: column;
             gap: 20px;
         }
 
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .radio-group,
-        .select-group {
+        .radio-group {
             display: flex;
-            gap: 15px;
+            flex-wrap: wrap;
+            gap: 16px;
             align-items: center;
-        }
-
-        .radio-group input,
-        .select-group input {
-            margin-right: 5px;
         }
 
         .submit-btn {
             display: block;
-            margin: 30px auto 0;
-            background-color: #1a3c34;
+            margin: 32px auto 0;
+            background-color: var(--primary);
             color: white;
-            padding: 12px 60px;
+            padding: 12px 48px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 500;
-            font-family: 'Poppins', sans-serif;
-            transition: background-color 0.3s;
+            font-family: inherit;
+            transition: background-color 0.2s;
         }
 
-        .submit-btn:hover {
-            background-color: #15332d;
+        .submit-btn:hover,
+        .submit-btn:focus {
+            background-color: var(--primary-dark);
         }
 
         .note {
             font-size: 13px;
             color: #666;
-            margin-top: 15px;
+            margin-top: 10px;
             font-style: italic;
         }
 
-        .account-details {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .account-details p {
-            margin: 8px 0;
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 24px;
         }
 
         table {
             width: 100%;
+            min-width: 600px;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            font-size: 14px;
         }
 
         th,
@@ -174,7 +176,6 @@
             border: 1px solid #e0e0e0;
             padding: 10px;
             text-align: left;
-            font-size: 14px;
         }
 
         th {
@@ -182,113 +183,116 @@
             font-weight: 500;
         }
 
-        @media (max-width: 768px) {
+        .upload-group {
+            margin-bottom: 28px;
+        }
+
+        /* ────────────────────────────────────────────────
+           Responsive Design
+        ──────────────────────────────────────────────── */
+
+        @media (min-width: 480px) {
             body {
-                padding: 15px;
-                font-size: 14px;
+                padding: 20px;
             }
 
             .admission {
-                padding: 15px;
-                border-radius: 8px;
+                padding: 28px;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .form-row {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .form-row>.form-group {
+                flex: 1 1 45%;
             }
 
             .header {
-                flex-direction: column;
-                text-align: center;
-                padding-bottom: 15px;
-                margin-bottom: 20px;
-            }
-
-            .header img {
-                max-width: 120px;
-                margin-bottom: 10px;
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+                align-items: center;
             }
 
             .header .company-details {
-                text-align: center;
+                text-align: right;
             }
 
-            .header .company-details h1 {
-                font-size: 20px;
+            .header img {
+                max-width: 170px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 32px;
             }
 
-            .header .company-details p {
-                font-size: 12px;
-                margin: 4px 0;
+            .admission {
+                padding: 36px;
+            }
+
+            .header img {
+                max-width: 180px;
+            }
+
+            .form-row>.form-group {
+                flex: 1 1 30%;
             }
 
             h2 {
-                font-size: 16px;
-                padding-bottom: 8px;
-                margin-bottom: 15px;
+                font-size: 20px;
             }
 
-            .form-group {
-                margin-bottom: 15px;
+            .radio-group {
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .admission {
+                padding: 40px 60px;
             }
 
-            label {
-                font-size: 12px;
-                margin-bottom: 6px;
+            .form-row>.form-group {
+                flex-basis: auto;
+                flex-grow: 1;
             }
 
-            input[type="text"],
-            input[type="email"],
-            input[type="number"],
-            input[type="date"],
-            select,
-            textarea {
-                padding: 8px;
-                font-size: 12px;
-                border-radius: 4px;
-            }
-
-            .form-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .radio-group,
-            .select-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+            .radio-group {
+                gap: 24px;
             }
 
             .submit-btn {
-                padding: 10px 30px;
-                font-size: 14px;
+                padding: 14px 80px;
+            }
+        }
+
+        /* Better touch targets & mobile readability */
+        @media (max-width: 640px) {
+
+            input,
+            select,
+            button,
+            textarea {
+                font-size: 16px;
+                /* Prevents iOS zoom on focus */
+                padding: 12px 14px;
+            }
+
+            .submit-btn {
                 width: 100%;
-                max-width: 200px;
+                padding: 14px 20px;
             }
 
-            .note {
-                font-size: 11px;
-                margin-top: 10px;
-            }
-
-            .account-details {
-                padding: 15px;
-                font-size: 12px;
-            }
-
-            .account-details p {
-                margin: 6px 0;
-            }
-
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-                margin-bottom: 15px;
-            }
-
-            th,
-            td {
-                padding: 8px;
-                font-size: 12px;
-                min-width: 100px;
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
             }
         }
     </style>
@@ -296,6 +300,7 @@
 
 <body>
     <div class="admission">
+
         <!-- Header Section -->
         <div class="header">
             <img src="https://ik.imagekit.io/7de5cntkw/nimtt-newlogo-dOqN8yQvbaHopnp3.avif?updatedAt=1746554872837"
@@ -309,260 +314,296 @@
         </div>
 
         <!-- Admission Form -->
-    <form method="post" action="/online-admission">
-        <h2>Course/Programme Details</h2>
-        <div class="form-group">
-            <label for="programme">Programme Name *</label>
-            <select id="programme" name="programme" required>
-                <option value="">Select</option>
-                <option value="iti-course">ITI</option>
-                <option value="diploma-engineering">Diploma in Engineering</option>
-                <option value="btech">B.Tech</option>
-                <option value="integrated-btech">Integrated B.Tech</option>
-                <option value="mtech">M.Tech</option>
-                <option value="bba">BBA</option>
-                <option value="mba">MBA</option>
-                <option value="bca">BCA</option>
-                <option value="mca">MCA</option>
-                <option value="bsc">B.Sc</option>
-                <option value="bsc-computer-science">B.Sc in Computer Science</option>
-                <option value="bsc-it">B.Sc IT</option>
-                <option value="msc-it">M.Sc IT</option>
-                <option value="msc-computer-science">M.Sc in Computer Science</option>
-                <option value="ba">BA</option>
-                <option value="bcom">B.Com</option>
-                <option value="pg-diploma">PG Diploma</option>
-                <option value="llb">LLB</option>
-                <option value="llm">LLM</option>
-                <option value="bsc-nursing">B.Sc Nursing</option>
-                <option value="gnm">GNM (General Nursing & Midwifery)</option>
-                <option value="bfa">BFA</option>
-                <option value="mfa">MFA</option>
-                <option value="bsw">BSW (Bachelor of Social Work)</option>
-                <option value="mfw">MFW</option>
-                <option value="bsc">B.Sc (General)</option>
-                <option value="msc">M.Sc (General)</option>
-                <option value="msc-nursing">M.Sc Nursing</option>
-                <option value="diploma-nursing-assistant">Diploma in Nursing Assistant</option>
-                <option value="post-basic-bsc-nursing">Post Basic B.Sc Nursing</option>
-                <option value="bmlt">BMLT (Bachelor in Medical Lab Technology)</option>
-                <option value="mmlt">MMLT</option>
-                <option value="boot">BOOT</option>
-                <option value="moot">MOOT</option>
-                <option value="bnys">BNYS</option>
-                <option value="diploma-homeo-pharma">Diploma in Homeo Pharmacy</option>
-                <option value="bsc-homeo-pharma">B.Sc in Homeo Pharmacy</option>
-                <option value="dnys">DNYS</option>
-                <option value="mphil">M.Phil</option>
-                <option value="phd">PhD (Doctor of Philosophy)</option>
-                <option value="dlitt">D.Litt</option>
-                <option value="dsc">D.Sc</option>
-                <option value="dpharma">D-Pharma</option>
-                <option value="bpharma">B-Pharma</option>
-                <option value="mpharma">M-Pharma</option>
-                <option value="other">Other</option>
-            </select>
-        </div>
-    
-        <div class="form-group">
-            <label for="session">Session/Year *</label>
-            <select id="session" name="session" required>
-                <option value="">Select</option>
-                <option value="2022-2023">2022-2023</option>
-                <option value="2023-2024">2023-2024</option>
-                <option value="2024-2025">2024-2025</option>
-                <option value="2025-2026">2025-2026</option>
-                <option value="2026-2027">2026-2027</option>
-            </select>
-        </div>
-    
-        <h2>Personal Information</h2>
-        <div class="form-group">
-            <label>Gender *</label>
-            <div class="radio-group">
-                <input type="radio" name="gender" value="male" required> Male
-                <input type="radio" name="gender" value="female" required> Female
-                <input type="radio" name="gender" value="other" required> Other
+        <form method="post" action="/online-admission" enctype="multipart/form-data">
+
+            <h2>Course/Programme Details</h2>
+            <div class="form-group">
+                <label for="programme">Programme Name *</label>
+                <select id="programme" name="programme" required>
+                    <option value="">Select</option>
+                    <option value="iti-course">ITI</option>
+                    <option value="diploma-engineering">Diploma in Engineering</option>
+                    <option value="btech">B.Tech</option>
+                    <option value="integrated-btech">Integrated B.Tech</option>
+                    <option value="mtech">M.Tech</option>
+                    <option value="bba">BBA</option>
+                    <option value="mba">MBA</option>
+                    <option value="bca">BCA</option>
+                    <option value="mca">MCA</option>
+                    <option value="bsc">B.Sc</option>
+                    <option value="bsc-computer-science">B.Sc in Computer Science</option>
+                    <option value="bsc-it">B.Sc IT</option>
+                    <option value="msc-it">M.Sc IT</option>
+                    <option value="msc-computer-science">M.Sc in Computer Science</option>
+                    <option value="ba">BA</option>
+                    <option value="bcom">B.Com</option>
+                    <option value="pg-diploma">PG Diploma</option>
+                    <option value="llb">LLB</option>
+                    <option value="llm">LLM</option>
+                    <option value="bsc-nursing">B.Sc Nursing</option>
+                    <option value="gnm">GNM (General Nursing & Midwifery)</option>
+                    <option value="bfa">BFA</option>
+                    <option value="mfa">MFA</option>
+                    <option value="bsw">BSW (Bachelor of Social Work)</option>
+                    <option value="mfw">MFW</option>
+                    <option value="bsc">B.Sc (General)</option>
+                    <option value="msc">M.Sc (General)</option>
+                    <option value="msc-nursing">M.Sc Nursing</option>
+                    <option value="diploma-nursing-assistant">Diploma in Nursing Assistant</option>
+                    <option value="post-basic-bsc-nursing">Post Basic B.Sc Nursing</option>
+                    <option value="bmlt">BMLT (Bachelor in Medical Lab Technology)</option>
+                    <option value="mmlt">MMLT</option>
+                    <option value="boot">BOOT</option>
+                    <option value="moot">MOOT</option>
+                    <option value="bnys">BNYS</option>
+                    <option value="diploma-homeo-pharma">Diploma in Homeo Pharmacy</option>
+                    <option value="bsc-homeo-pharma">B.Sc in Homeo Pharmacy</option>
+                    <option value="dnys">DNYS</option>
+                    <option value="mphil">M.Phil</option>
+                    <option value="phd">PhD (Doctor of Philosophy)</option>
+                    <option value="dlitt">D.Litt</option>
+                    <option value="dsc">D.Sc</option>
+                    <option value="dpharma">D-Pharma</option>
+                    <option value="bpharma">B-Pharma</option>
+                    <option value="mpharma">M-Pharma</option>
+                    <option value="other">Other</option>
+                </select>
             </div>
-        </div>
-    
-        <div class="form-group">
-            <label>Date of Birth *</label>
+
+            <div class="form-group">
+                <label for="session">Session/Year *</label>
+                <select id="session" name="session" required>
+                    <option value="">Select</option>
+                    <option value="2022-2023">2022-2023</option>
+                    <option value="2023-2024">2023-2024</option>
+                    <option value="2024-2025">2024-2025</option>
+                    <option value="2025-2026">2025-2026</option>
+                    <option value="2026-2027">2026-2027</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject / Specialization *</label>
+                <input type="text" id="subject" name="subject"
+                    placeholder="e.g., Computer Science, Mechanical, Finance, etc." required>
+            </div>
+
+            <h2>Personal Information</h2>
+            <p class="note">*Note - All documents are included except "Category" (not required).</p>
+
+            <div class="form-group">
+                <label>Gender *</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="gender" value="male" required> Male</label>
+                    <label><input type="radio" name="gender" value="female" required> Female</label>
+                    <label><input type="radio" name="gender" value="other" required> Other</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth *</label>
+                <div class="form-row">
+                    <div class="form-group">
+                        <select name="dob_month" required>
+                            <option value="">Month</option>
+                            <option value="jan">January</option>
+                            <option value="feb">February</option>
+                            <option value="mar">March</option>
+                            <option value="apr">April</option>
+                            <option value="may">May</option>
+                            <option value="jun">June</option>
+                            <option value="jul">July</option>
+                            <option value="aug">August</option>
+                            <option value="sep">September</option>
+                            <option value="oct">October</option>
+                            <option value="nov">November</option>
+                            <option value="dec">December</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select name="dob_day" required>
+                            <option value="">Day</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                            <option value="18">18</option>
+                            <option value="19">19</option>
+                            <option value="20">20</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                            <option value="29">29</option>
+                            <option value="30">30</option>
+                            <option value="31">31</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select name="dob_year" id="dob_year" required>
+                            <option value="">Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="applicant-name">Name of Applicant *</label>
+                <input type="text" id="applicant-name" name="applicant_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="father-name">Father Name *</label>
+                <input type="text" id="father-name" name="father_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mother-name">Mother Name *</label>
+                <input type="text" id="mother-name" name="mother_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="aadhar">Aadhar Number *</label>
+                <input type="text" id="aadhar" name="aadhar_number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Id *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nationality">Nationality *</label>
+                <input type="text" id="nationality" name="nationality" required>
+            </div>
+
+            <div class="form-group">
+                <label>Domicile *</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="domicile" value="west_bengal" required> West Bengal</label>
+                    <label><input type="radio" name="domicile" value="maharashtra" required> Maharashtra</label>
+                    <label><input type="radio" name="domicile" value="other" required> Other</label>
+                </div>
+                <input type="text" id="domicile-others" name="domicile_others" placeholder="In Case of others, Specify"
+                    style="margin-top: 12px;">
+            </div>
+
+            <h2>Contact Details</h2>
+            <div class="form-group">
+                <label for="address">Permanent Address *</label>
+                <textarea id="address" name="permanent_address" rows="4" required></textarea>
+            </div>
+
             <div class="form-row">
-                <select name="dob_month" required>
-                    <option value="">Month</option>
-                    <option value="jan">January</option>
-                    <option value="feb">February</option>
-                    <option value="mar">March</option>
-                    <option value="apr">April</option>
-                    <option value="may">May</option>
-                    <option value="jun">June</option>
-                    <option value="jul">July</option>
-                    <option value="aug">August</option>
-                    <option value="sep">September</option>
-                    <option value="oct">October</option>
-                    <option value="nov">November</option>
-                    <option value="dec">December</option>
-                </select>
-                <select name="dob_day" required>
-                    <option value="">Day</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                    <option value="24">24</option>
-                    <option value="25">25</option>
-                    <option value="26">26</option>
-                    <option value="27">27</option>
-                    <option value="28">28</option>
-                    <option value="29">29</option>
-                    <option value="30">30</option>
-                    <option value="31">31</option>
-                </select>
-                <select name="dob_year" id="dob_year" required>
-                    <option value="">Year</option>
-                </select>
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    <input type="text" id="city" name="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="state">State *</label>
+                    <input type="text" id="state" name="state" required>
+                </div>
+                <div class="form-group">
+                    <label for="pin">Pin Code *</label>
+                    <input type="text" id="pin" name="pin_code" required>
+                </div>
             </div>
-        </div>
-    
-        <div class="form-group">
-            <label for="applicant-name">Name of Applicant *</label>
-            <input type="text" id="applicant-name" name="applicant_name" required>
-        </div>
-        <div class="form-group">
-            <label for="father-name">Father Name *</label>
-            <input type="text" id="father-name" name="father_name" required>
-        </div>
-        <div class="form-group">
-            <label for="mother-name">Mother Name *</label>
-            <input type="text" id="mother-name" name="mother_name" required>
-        </div>
-        <div class="form-group">
-            <label for="aadhar">Aadhar Number *</label>
-            <input type="text" id="aadhar" name="aadhar_number" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Email Id *</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="form-group">
-            <label>Category *</label>
-            <div class="radio-group">
-                <input type="radio" name="category" value="sc" required> SC
-                <input type="radio" name="category" value="st" required> ST
-                <input type="radio" name="category" value="obc" required> OBC
-                <input type="radio" name="category" value="gen" required> GEN
-                <input type="radio" name="category" value="others" required> Others
-            </div>
-            <input type="text" id="category-others" name="category_others" placeholder="In Case of others, Specify"
-                >
-        </div>
-    
-        <div class="form-group">
-            <label for="nationality">Nationality *</label>
-            <input type="text" id="nationality" name="nationality" required>
-        </div>
-    
-        <div class="form-group">
-            <label>Domicile *</label>
-            <div class="radio-group">
-                <input type="radio" name="domicile" value="west_bengal" required> West Bengal
-                <input type="radio" name="domicile" value="maharashtra" required> Maharashtra
-                <input type="radio" name="domicile" value="other" required> Other
-            </div>
-            <input type="text" id="domicile-others" name="domicile_others" placeholder="In Case of others, Specify"
-                >
-        </div>
-    
-        <h2>Contact Details</h2>
-        <div class="form-group">
-            <label for="address">Permanent Address *</label>
-            <textarea id="address" name="permanent_address" required></textarea>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label for="city">City *</label>
-                <input type="text" id="city" name="city" required>
-            </div>
-            <div class="form-group">
-                <label for="state">State *</label>
-                <input type="text" id="state" name="state" required>
-            </div>
-            <div class="form-group">
-                <label for="pin">Pin Code *</label>
-                <input type="text" id="pin" name="pin_code" required>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="mobile">Permanent Mobile Number *</label>
-            <input type="text" id="mobile" name="mobile_number" required>
-        </div>
-    
-        <h2>Qualifying Examination Details *</h2>
-        <table>
-            <tr>
-                <th>Examination</th>
-                <th>Percentage (%)</th>
-                <th>Subject/Stream</th>
-            </tr>
-            <tr>
-                <td>10th</td>
-                <td><input type="number" step="0.01" name="exam_10th_percentage" required></td>
-                <td><input type="text" name="exam_10th_stream" required></td>
-            </tr>
-            <tr>
-                <td>12th</td>
-                <td><input type="number" step="0.01" name="exam_12th_percentage" required></td>
-                <td><input type="text" name="exam_12th_stream" required></td>
-            </tr>
-            <tr>
-                <td>Graduation</td>
-                <td><input type="number" step="0.01" name="exam_graduation_percentage" required></td>
-                <td><input type="text" name="exam_graduation_stream" required></td>
-            </tr>
-            <tr>
-                <td>Post Graduation</td>
-                <td><input type="number" step="0.01" name="exam_postgrad_percentage" required></td>
-                <td><input type="text" name="exam_postgrad_stream" required></td>
-            </tr>
-        </table>
-    
-        <p class="note">*Note - Student may submit his / her passport size pic along with self attested academic documents
-            later on visiting the campus.</p>
-    
-        <h2>Declaration by Candidate</h2>
-        <p>I hereby declare that I have carefully read the instructions and all the information furnished by me are correct.
-        </p>
-    
-        <button type="submit" class="submit-btn">Submit</button>
-    </form>
 
+            <div class="form-group">
+                <label for="mobile">Permanent Mobile Number *</label>
+                <input type="text" id="mobile" name="mobile_number" required>
+            </div>
+
+            <h2>Qualifying Examination Details *</h2>
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Examination</th>
+                        <th>Percentage (%)</th>
+                        <th>Subject/Stream</th>
+                    </tr>
+                    <tr>
+                        <td>10th</td>
+                        <td><input type="number" step="0.01" name="exam_10th_percentage"></td>
+                        <td><input type="text" name="exam_10th_stream"></td>
+                    </tr>
+                    <tr>
+                        <td>12th</td>
+                        <td><input type="number" step="0.01" name="exam_12th_percentage"></td>
+                        <td><input type="text" name="exam_12th_stream"></td>
+                    </tr>
+                    <tr>
+                        <td>Graduation</td>
+                        <td><input type="number" step="0.01" name="exam_graduation_percentage"></td>
+                        <td><input type="text" name="exam_graduation_stream"></td>
+                    </tr>
+                    <tr>
+                        <td>Post Graduation</td>
+                        <td><input type="number" step="0.01" name="exam_postgrad_percentage"></td>
+                        <td><input type="text" name="exam_postgrad_stream"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <h2>Upload Documents</h2>
+            <div class="upload-group">
+                <label for="photo">1. Recent Passport Size Photograph *</label>
+                <input type="file" id="photo" name="photo" accept="image/*" required>
+                <p class="note">Max size: 2MB (JPG / PNG)</p>
+            </div>
+
+            <div class="upload-group">
+                <label for="last_qualification">2. Last Qualifying Examination Marksheet / Certificate *</label>
+                <input type="file" id="last_qualification" name="last_qualification" accept=".pdf,.jpg,.jpeg,.png"
+                    required>
+                <p class="note">Max size: 2MB (PDF / Image)</p>
+            </div>
+
+            <div class="upload-group">
+                <label for="aadhar_doc">3. e-Aadhaar / Aadhaar Card (self-attested) *</label>
+                <input type="file" id="aadhar_doc" name="aadhar_doc" accept=".pdf,.jpg,.jpeg,.png" required>
+                <p class="note">Max size: 2MB (PDF / Image)</p>
+            </div>
+
+            <!-- <div class="upload-group">
+                <label for="other_docs">4. Other Documents (if any)</label>
+                <input type="file" id="other_docs" name="other_docs" accept=".pdf,.jpg,.jpeg,.png" multiple>
+                <p class="note">e.g., Caste Certificate, Domicile Certificate, etc. (Max size per file: 5MB)</p>
+            </div> -->
+
+            <p class="note">*Note - All uploaded documents should be clear and readable. You may submit additional
+                self-attested documents later on visiting the campus if required.</p>
+
+            <h2>Declaration by Candidate</h2>
+            <p>I hereby declare that I have carefully read the instructions and all the information furnished by me are
+                correct.</p>
+
+            <button type="submit" class="submit-btn">Submit</button>
+
+        </form>
     </div>
-
 
     <script>
         const yearSelect = document.getElementById("dob_year");
         const currentYear = new Date().getFullYear();
-        const startYear = 1950; // change as per your need
+        const startYear = 1950;
 
         for (let year = currentYear; year >= startYear; year--) {
             let option = document.createElement("option");

@@ -2259,141 +2259,267 @@ app.post("/join-faculty", (req, res) => {
 });
 
 // Handle form submission for admission
-app.post("/online-admission", (req, res) => {
-  const {
-    programme,
-    session,
-    gender,
-    dob_month,
-    dob_day,
-    dob_year,
-    applicant_name,
-    father_name,
-    mother_name,
-    aadhar_number,
-    email,
-    category,
-    nationality,
-    domicile,
-    domicile_others,
-    permanent_address,
-    city,
-    state,
-    pin_code,
-    mobile_number,
-    exam_10th_stream,
-    exam_12th_stream,
-    exam_graduation_stream,
-    exam_postgrad_stream
-  } = req.body;
+// app.post("/online-admission", (req, res) => {
+//   const { programme, session, gender, dob_month, dob_day, dob_year, applicant_name, father_name, mother_name, aadhar_number, email, category, nationality, domicile, domicile_others, permanent_address, city, state, pin_code, mobile_number, exam_10th_stream, exam_12th_stream, exam_graduation_stream, exam_postgrad_stream, photo, last_qualification, aadhar_doc, other_docs } = req.body;
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: "nimttheadoffice@rediffmail.com",
-    subject: `New Contact Form Submission from ${applicant_name}`,
-    text: `
-         programme_name : ${programme} 
-         session : ${session}
-         gender : ${gender}
-         Date of birth day : ${dob_day}
-         Date of birth month : ${dob_month}
-         Date of birth year : ${dob_year}
-         applicant _name : ${applicant_name}
-         father_name :${father_name}
-         mother_name :${mother_name}
-         aadhar_number : ${aadhar_number}
-         email : ${email}
-         category : ${category}
-         nationality : ${nationality}
-          domicile :${domicile}
-          domicile_others : ${domicile_others}
-          permanent_address :${permanent_address}
-            city :${city}
-            state : ${state}
-            pin_cod : ${pin_code}
-            mobile_number : ${mobile_number}
-            exam_10th_stream : ${exam_10th_stream}
-            exam_12th_stream :${exam_12th_stream}
-            exam_graduation_stream : ${exam_graduation_stream}
-            exam_postgrad_stream : ${exam_postgrad_stream}
-`
-  };
+//   const mailOptions = {
+//     from: process.env.EMAIL_USER,
+//     // to: "nimttheadoffice@rediffmail.com",
+//     to: "sohampatra866@gmail.com",
+//     subject: `New Contact Form Submission from ${applicant_name}`,
+//     text: `
+//          programme_name : ${programme}
+//          session : ${session}
+//          gender : ${gender}
+//          Date of birth day : ${dob_day}
+//          Date of birth month : ${dob_month}
+//          Date of birth year : ${dob_year}
+//          applicant _name : ${applicant_name}
+//          father_name :${father_name}
+//          mother_name :${mother_name}
+//          aadhar_number : ${aadhar_number}
+//          email : ${email}
+//          category : ${category}
+//          nationality : ${nationality}
+//           domicile :${domicile}
+//           domicile_others : ${domicile_others}
+//           permanent_address :${permanent_address}
+//             city :${city}
+//             state : ${state}
+//             pin_cod : ${pin_code}
+//             mobile_number : ${mobile_number}
+//             exam_10th_stream : ${exam_10th_stream}
+//             exam_12th_stream :${exam_12th_stream}
+//             exam_graduation_stream : ${exam_graduation_stream}
+//             exam_postgrad_stream : ${exam_postgrad_stream}
+//             photo : ${photo}
+//             last_qualification : ${last_qualification}
+//             aadhar_doc : ${aadhar_doc}
+//             other_docs : ${other_docs}
+// `
+//   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-      return res.send(`
+//   transporter.sendMail(mailOptions, (error, info) => {
+//     if (error) {
+//       console.error("Error sending email:", error);
+//       return res.send(`
+//           <!DOCTYPE html>
+//           <html lang="en">
+//           <head>
+//               <meta charset="UTF-8">
+//               <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//               <title>Error</title>
+//               <script src="https://cdn.tailwindcss.com"></script>
+//               <style>
+//                   .modal {
+//                       animation: fadeIn 0.3s ease-in-out;
+//                   }
+//                   @keyframes fadeIn {
+//                       from { opacity: 0; transform: translateY(-10px); }
+//                       to { opacity: 1; transform: translateY(0); }
+//                   }
+//               </style>
+//           </head>
+//           <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+//               <div class="modal fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+//                   <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center">
+//                       <div class="flex justify-center mb-4">
+//                           <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+//                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+//                           </svg>
+//                       </div>
+//                       <h2 class="text-2xl font-semibold text-gray-800 mb-2">Error</h2>
+//                       <p class="text-gray-600 mb-6">Error sending email. Please try again later.</p>
+//                       <a href="/online-admission" class="inline-block px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Back to Form</a>
+//                   </div>
+//               </div>
+//           </body>
+//           </html>
+//       `);
+//     }
+//     // console.log('Email sent:', info.response);
+//     res.send(`
+//           <!DOCTYPE html>
+//           <html lang="en">
+//           <head>
+//               <meta charset="UTF-8">
+//               <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//               <title>Success</title>
+//               <script src="https://cdn.tailwindcss.com"></script>
+//               <style>
+//                   .modal {
+//                       animation: fadeIn 0.3s ease-in-out;
+//                   }
+//                   @keyframes fadeIn {
+//                       from { opacity: 0; transform: translateY(-10px); }
+//                       to { opacity: 1; transform: translateY(0); }
+//                   }
+//               </style>
+//           </head>
+//           <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+//               <div class="modal fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+//                   <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center">
+//                       <div class="flex justify-center mb-4">
+//                           <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+//                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+//                           </svg>
+//                       </div>
+//                       <h2 class="text-2xl font-semibold text-gray-800 mb-2">Success</h2>
+//                       <p class="text-gray-600 mb-6">Form submitted successfully! Email sent.</p>
+//                       <a href="/payment-section" class="inline-block px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">Go to paymant section</a>
+//                   </div>
+//               </div>
+//           </body>
+//           </html>
+//       `);
+//   });
+// });
+
+
+// ====================== ONLINE ADMISSION ROUTE ======================
+app.post("/online-admission",
+  upload.fields([
+    { name: "photo", maxCount: 1 },
+    { name: "last_qualification", maxCount: 1 },
+    { name: "aadhar_doc", maxCount: 1 },
+    { name: "other_docs", maxCount: 5 }   // max 5 additional documents
+  ]),
+  async (req, res) => {
+    try {
+      const {
+        programme, session, subject, gender,
+        dob_month, dob_day, dob_year,
+        applicant_name, father_name, mother_name,
+        aadhar_number, email, nationality,
+        domicile, domicile_others,
+        permanent_address, city, state, pin_code, mobile_number,
+        exam_10th_stream, exam_12th_stream,
+        exam_graduation_stream, exam_postgrad_stream
+      } = req.body;
+
+      // Get uploaded files
+      const photoFile = req.files["photo"] ? req.files["photo"][0] : null;
+      const lastQualFile = req.files["last_qualification"] ? req.files["last_qualification"][0] : null;
+      const aadharFile = req.files["aadhar_doc"] ? req.files["aadhar_doc"][0] : null;
+      const otherDocs = req.files["other_docs"] || [];
+
+      // Basic validation
+      if (!photoFile || !lastQualFile || !aadharFile) {
+        return res.status(400).send(`
+          <h2 style="color:red;text-align:center;margin-top:50px;">
+            Error: Photo, Last Qualification Marksheet, and Aadhaar Card are mandatory!
+          </h2>
+          <div style="text-align:center;margin-top:20px;">
+            <a href="/online-admission" style="padding:10px 20px;background:#dc2626;color:white;text-decoration:none;border-radius:5px;">
+              ← Go Back to Form
+            </a>
+          </div>
+        `);
+      }
+
+      // Prepare file URLs (so you can view them later)
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      
+      const photoUrl = photoFile ? `${baseUrl}/uploads/${photoFile.filename}` : "";
+      const lastQualUrl = lastQualFile ? `${baseUrl}/uploads/${lastQualFile.filename}` : "";
+      const aadharUrl = aadharFile ? `${baseUrl}/uploads/${aadharFile.filename}` : "";
+
+      // Email content
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: " nimttheadoffice@rediffmail.com",
+        subject:
+          `New Admission Application - ${applicant_name // Change back to real email later
+        }`, html: `
+          <h2>New Online Admission Form Submitted</h2>
+          <p><strong>Programme:</strong> ${programme}</p>
+          <p><strong>Session:</strong> ${session}</p>
+          <p><strong>Subject/Specialization:</strong> ${subject || "Not provided"}</p>
+          
+          <h3>Personal Details</h3>
+          <p><strong>Name:</strong> ${applicant_name}</p>
+          <p><strong>Father's Name:</strong> ${father_name}</p>
+          <p><strong>Mother's Name:</strong> ${mother_name}</p>
+          <p><strong>Gender:</strong> ${gender}</p>
+          <p><strong>Date of Birth:</strong> ${dob_day}/${dob_month}/${dob_year}</p>
+          <p><strong>Aadhar Number:</strong> ${aadhar_number}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Mobile:</strong> ${mobile_number}</p>
+          <p><strong>Nationality:</strong> ${nationality}</p>
+          <p><strong>Domicile:</strong> ${domicile} ${domicile_others ? `(${domicile_others})` : ""}</p>
+
+          <h3>Contact Details</h3>
+          <p><strong>Address:</strong> ${permanent_address}</p>
+          <p><strong>City:</strong> ${city}, ${state} - ${pin_code}</p>
+
+          <h3>Uploaded Documents</h3>
+          <ul>
+            <li><strong>Photo:</strong> <a href="${photoUrl}" target="_blank">View Photo</a></li>
+            <li><strong>Last Qualification:</strong> <a href="${lastQualUrl}" target="_blank">View Document</a></li>
+            <li><strong>Aadhaar Card:</strong> <a href="${aadharUrl}" target="_blank">View Aadhaar</a></li>
+            ${otherDocs.length > 0 ? `<li><strong>Other Documents:</strong> ${otherDocs.length} file(s) uploaded</li>` : ""}
+          </ul>
+
+          <hr>
+          <p><small>Submitted on: ${new Date().toLocaleString("en-IN")}</small></p>
+        ` };
+
+      // Send email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Email sending error:", error);
+          return res.send(`
+            <div style="text-align:center; padding:40px; font-family:Arial;">
+              <h2 style="color:#dc2626;">❌ Error Sending Confirmation</h2>
+              <p>Your form was received, but we couldn't send the email notification.</p>
+              <a href="/online-admission" style="padding:12px 25px; background:#2563eb; color:white; text-decoration:none; border-radius:6px;">
+                Back to Admission Form
+              </a>
+            </div>
+          `);
+        }
+
+        // Success response
+        res.send(`
           <!DOCTYPE html>
           <html lang="en">
           <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Error</title>
-              <script src="https://cdn.tailwindcss.com"></script>
-              <style>
-                  .modal {
-                      animation: fadeIn 0.3s ease-in-out;
-                  }
-                  @keyframes fadeIn {
-                      from { opacity: 0; transform: translateY(-10px); }
-                      to { opacity: 1; transform: translateY(0); }
-                  }
-              </style>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Submission Successful</title>
+            <script src="https://cdn.tailwindcss.com"></script>
           </head>
-          <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-              <div class="modal fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-                  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center">
-                      <div class="flex justify-center mb-4">
-                          <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                          </svg>
-                      </div>
-                      <h2 class="text-2xl font-semibold text-gray-800 mb-2">Error</h2>
-                      <p class="text-gray-600 mb-6">Error sending email. Please try again later.</p>
-                      <a href="/online-admission" class="inline-block px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">Back to Form</a>
-                  </div>
+          <body class="bg-gray-50 flex items-center justify-center min-h-screen">
+            <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+              <div class="mb-6 flex justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
               </div>
+              <h1 class="text-3xl font-bold text-gray-800 mb-2">Application Submitted Successfully!</h1>
+              <p class="text-gray-600 mb-8">Thank you, <strong>${applicant_name}</strong>. Your application has been received.</p>
+              
+              <a href="/payment-section" 
+                 class="inline-block px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition">
+                Proceed to Payment Section →
+              </a>
+              
+              <p class="text-xs text-gray-500 mt-10">
+                A confirmation email has been sent to <strong>${email}</strong>
+              </p>
+            </div>
           </body>
           </html>
-      `);
+        `);
+      });
+
+    } catch (err) {
+      console.error("Server error:", err);
+      res.status(500).send("Something went wrong. Please try again.");
     }
-    // console.log('Email sent:', info.response);
-    res.send(`
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Success</title>
-              <script src="https://cdn.tailwindcss.com"></script>
-              <style>
-                  .modal {
-                      animation: fadeIn 0.3s ease-in-out;
-                  }
-                  @keyframes fadeIn {
-                      from { opacity: 0; transform: translateY(-10px); }
-                      to { opacity: 1; transform: translateY(0); }
-                  }
-              </style>
-          </head>
-          <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-              <div class="modal fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-                  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center">
-                      <div class="flex justify-center mb-4">
-                          <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                          </svg>
-                      </div>
-                      <h2 class="text-2xl font-semibold text-gray-800 mb-2">Success</h2>
-                      <p class="text-gray-600 mb-6">Form submitted successfully! Email sent.</p>
-                      <a href="/payment-section" class="inline-block px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">Go to paymant section</a>
-                  </div>
-              </div>
-          </body>
-          </html>
-      `);
-  });
-});
+  }
+);
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
